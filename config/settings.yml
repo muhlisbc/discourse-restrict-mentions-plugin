@@ -1,0 +1,4 @@
+plugins:
+  restrict_mentions_enabled:
+    default: true
+    client: true
