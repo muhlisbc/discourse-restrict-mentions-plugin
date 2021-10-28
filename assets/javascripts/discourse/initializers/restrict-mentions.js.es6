@@ -69,6 +69,12 @@ function initWithApi(api) {
         return;
       }
 
+      //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY
+      const index = allowed.indexOf('ATLAS_Customers');
+      if (index > -1) {
+        allowed.splice(index, 1);
+      }
+
       // const topicId = this.get("topic.id");
       // const categoryId =
       //   this.get("topic.category_id") || this.get("composer.categoryId");
