@@ -59,6 +59,8 @@ function initWithApi(api) {
         return this._super(...arguments);
       }
 
+      let viewGroups = true;
+
       const allowed =
         this.get("topic.c_allowed_mention_groups") ||
         this.currentUser.get("c_allowed_mention_groups");
@@ -69,11 +71,14 @@ function initWithApi(api) {
         return;
       }
 
-      //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY
-      // const index = allowed.indexOf('ATLAS_Customers');
-      // if (index > -1) {
-      //   allowed.splice(index, 1);
-      // }
+      //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY OF STANDARD USERS
+      if(!this.currentUser.admin && !this.currentUser.moderator){
+        viewGroups = false;
+        const index = allowed.indexOf('ATLAS_Customers');
+        if (index > -1) {
+          allowed.splice(index, 1);
+        }
+      }
 
       // const topicId = this.get("topic.id");
       // const categoryId =
@@ -83,7 +88,7 @@ function initWithApi(api) {
         term,
         // topicId,
         // categoryId,
-        includeGroups: false,
+        includeGroups: viewGroups,
         groupMembersOf: allowed
       };
 
