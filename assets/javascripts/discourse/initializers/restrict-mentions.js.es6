@@ -70,10 +70,10 @@ function initWithApi(api) {
       }
 
       //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY
-      const index = allowed.indexOf('ATLAS_Customers');
-      if (index > -1) {
-        allowed.splice(index, 1);
-      }
+      // const index = allowed.indexOf('ATLAS_Customers');
+      // if (index > -1) {
+      //   allowed.splice(index, 1);
+      // }
 
       // const topicId = this.get("topic.id");
       // const categoryId =
@@ -83,7 +83,7 @@ function initWithApi(api) {
         term,
         // topicId,
         // categoryId,
-        includeGroups: true,
+        includeGroups: false,
         groupMembersOf: allowed
       };
 
