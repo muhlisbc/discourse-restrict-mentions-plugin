@@ -74,10 +74,13 @@ function initWithApi(api) {
       //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY OF STANDARD USERS
       if(!this.currentUser.admin && !this.currentUser.moderator){
         viewGroups = false;
-        const index = allowed.indexOf('ATLAS_Customers');
+        // const index = allowed.indexOf('ATLAS_Customers');
+        const index = allowed.indexOf('trust_level_1');
+
         if (index > -1) {
           allowed.splice(index, 1);
         }
+        console.log(allowed)
       }
 
       // const topicId = this.get("topic.id");
