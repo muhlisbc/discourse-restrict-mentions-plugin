@@ -33,6 +33,8 @@ function initWithApi(api) {
           newVal = val.filter(x => !Ember.isBlank(x)).join("|");
         }
 
+        console.log(newVal)
+
         this.model.set("c_allowed_mention_groups", newVal);
       }
     }
