@@ -6,6 +6,7 @@ function initWithApi(api) {
   if (!Discourse.SiteSettings.restrict_mentions_enabled) return;
 
   api.modifyClass("component:groups-form-interaction-fields", {
+    pluginId: 'groups-form-interaction-fields-plugin',
     @discourseComputed(
       "siteSettings.restrict_mentions_enabled",
       "currentUser.admin",
@@ -41,6 +42,7 @@ function initWithApi(api) {
   });
 
   api.modifyClass("model:group", {
+    pluginId: 'group-plugin',
     asJSON() {
       const attrs = this._super(...arguments);
 
@@ -56,6 +58,7 @@ function initWithApi(api) {
   });
 
   api.modifyClass("component:composer-editor", {
+    pluginId: 'composer-editor-plugin',
     userSearchTerm(term) {
       if (!this.siteSettings.restrict_mentions_enabled) {
         return this._super(...arguments);
