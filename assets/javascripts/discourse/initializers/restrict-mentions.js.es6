@@ -87,14 +87,13 @@ function initWithApi(api) {
         console.log(allowed)
       }
 
-      // const topicId = this.get("topic.id");
-      // const categoryId =
-      //   this.get("topic.category_id") || this.get("composer.categoryId");
+      const topicId = this.get("topic.id");
+      const categoryId = this.get("topic.category_id") || this.get("composer.categoryId");
 
       const opts = {
         term,
-        // topicId,
-        // categoryId,
+        topicId,
+        categoryId,
         includeGroups: viewGroups,
         groupMembersOf: allowed
       };
