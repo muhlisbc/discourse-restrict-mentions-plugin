@@ -36,6 +36,15 @@ function initWithApi(api) {
 
         console.log(newVal)
 
+        if(!this.currentUser.admin && !this.currentUser.moderator && newVal.includes("ATLAS_Customers")){
+         //REMOVE ATLAS_customer here
+          const index = newVal.indexOf('ATLAS_Customers');
+
+          if (index > -1) {
+            newVal.splice(index, 1);
+          }
+        }
+
         this.model.set("c_allowed_mention_groups", newVal);
       }
     }
