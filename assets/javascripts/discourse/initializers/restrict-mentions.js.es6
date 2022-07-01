@@ -3,6 +3,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 
 function initWithApi(api) {
+  console.log(api)
   if (!Discourse.SiteSettings.restrict_mentions_enabled) return;
 
   api.modifyClass("component:groups-form-interaction-fields", {
@@ -36,12 +37,18 @@ function initWithApi(api) {
 
         console.log(newVal)
 
-        if(!this.currentUser.admin && !this.currentUser.moderator && newVal.includes("ATLAS_Customers")){
-         //REMOVE ATLAS_customer here
+        if(!this.currentUser.admin && !this.currentUser.moderator){
           const index = newVal.indexOf('ATLAS_Customers');
-
           if (index > -1) {
             newVal.splice(index, 1);
+          }
+          const TrustlevelZero = allowed.indexOf('Trust_level_0');
+          if (TrustlevelZero > -1) {
+            allowed.splice(TrustlevelZero, 1);
+          }
+          const TrustlevelOne = allowed.indexOf('Trust_level_1');
+          if (TrustlevelOne > -1) {
+            allowed.splice(TrustlevelOne, 1);
           }
         }
 
@@ -89,9 +96,16 @@ function initWithApi(api) {
       if(!this.currentUser.admin && !this.currentUser.moderator){
         viewGroups = false;
         const index = allowed.indexOf('ATLAS_Customers');
-
         if (index > -1) {
           allowed.splice(index, 1);
+        }
+        const TrustlevelZero = allowed.indexOf('Trust_level_0');
+        if (TrustlevelZero > -1) {
+          allowed.splice(TrustlevelZero, 1);
+        }
+        const TrustlevelOne = allowed.indexOf('Trust_level_1');
+        if (TrustlevelOne > -1) {
+          allowed.splice(TrustlevelOne, 1);
         }
         console.log(allowed)
       }
@@ -116,6 +130,6 @@ export default {
   name: "restrict-mentions",
 
   initialize() {
-    withPluginApi("0.8", initWithApi);
+    withPluginApi("0.8.7", initWithApi);
   }
 };
