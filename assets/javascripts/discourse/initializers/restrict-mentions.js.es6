@@ -37,7 +37,7 @@ function initWithApi(api) {
 
         console.log(newVal)
 
-        if(!this.currentUser.admin && !this.currentUser.moderator){
+        if(!this.currentUser.admin || !this.currentUser.moderator){
           const index = newVal.indexOf('ATLAS_Customers');
           if (index > -1) {
             newVal.splice(index, 1);
@@ -93,7 +93,7 @@ function initWithApi(api) {
       }
 
       //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY OF STANDARD USERS
-      if(!this.currentUser.admin && !this.currentUser.moderator){
+      if(!this.currentUser.admin || !this.currentUser.moderator){
         viewGroups = false;
         const index = allowed.indexOf('ATLAS_Customers');
         if (index > -1) {
