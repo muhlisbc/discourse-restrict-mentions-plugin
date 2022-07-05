@@ -3,7 +3,7 @@ import discourseComputed from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 
 function initWithApi(api) {
-  console.log(api)
+  console.log(userSearch)
   if (!Discourse.SiteSettings.restrict_mentions_enabled) return;
 
   api.modifyClass("component:groups-form-interaction-fields", {
@@ -93,22 +93,20 @@ function initWithApi(api) {
       }
 
       //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY OF STANDARD USERS
-      if(!this.currentUser.admin && !this.currentUser.moderator){
-        viewGroups = false;
-        const index = allowed.indexOf('ATLAS_Customers');
-        if (index > -1) {
-          allowed.splice(index, 1);
-        }
-        const TrustlevelZero = allowed.indexOf('Trust_level_0');
-        if (TrustlevelZero > -1) {
-          allowed.splice(TrustlevelZero, 1);
-        }
-        const TrustlevelOne = allowed.indexOf('Trust_level_1');
-        if (TrustlevelOne > -1) {
-          allowed.splice(TrustlevelOne, 1);
-        }
-        console.log(allowed)
+      viewGroups = false;
+      const index = allowed.indexOf('ATLAS_Customers');
+      if (index > -1) {
+        allowed.splice(index, 1);
       }
+      const TrustlevelZero = allowed.indexOf('Trust_level_0');
+      if (TrustlevelZero > -1) {
+        allowed.splice(TrustlevelZero, 1);
+      }
+      const TrustlevelOne = allowed.indexOf('Trust_level_1');
+      if (TrustlevelOne > -1) {
+        allowed.splice(TrustlevelOne, 1);
+      }
+      console.log(allowed)
 
       const topicId = this.get("topic.id");
       const categoryId = this.get("topic.category_id") || this.get("composer.categoryId");
