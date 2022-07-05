@@ -11,30 +11,6 @@ function initWithApi(api) {
 
   api.modifyClass("component:groups-form-interaction-fields", {
     pluginId: PLUGIN_ID,
-    init() {
-      const allowed =
-          this.get("topic.c_allowed_mention_groups") ||
-          this.currentUser.get("c_allowed_mention_groups");
-
-      //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY OF STANDARD USERS
-      if(!this.currentUser.admin && !this.currentUser.moderator){
-        const array = this.currentUser.c_allowed_mention_groups;
-        const index = array.indexOf('ATLAS_Customers');
-        if (index > -1) { // only splice array when item is found
-          array.splice(index, 1); // 2nd parameter means remove one item only
-        }
-        this.currentUser.c_allowed_mention_groups = array;
-        console.log(this.currentUser.c_allowed_mention_groups)
-      }
-      const opts = {
-        includeGroups: viewGroups,
-        groupMembersOf: allowed
-      };
-
-      console.log(opts)
-
-      return userSearch(opts);
-    },
     @discourseComputed(
       "siteSettings.restrict_mentions_enabled",
       "currentUser.admin",
@@ -89,24 +65,19 @@ function initWithApi(api) {
     pluginId: PLUGIN_ID,
     @on("keyDown")
     _trackTyping() {
-      console.log(this.composer.action)
-
       let viewGroups = true;
 
-      const allowed =
-          this.get("topic.c_allowed_mention_groups") ||
-          this.currentUser.get("c_allowed_mention_groups");
-
-      console.log([this, allowed]);
+      let allowed = this.currentUser.c_allowed_mention_groups;
 
       //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY OF STANDARD USERS
       if(!this.currentUser.admin && !this.currentUser.moderator){
-        const array = this.currentUser.c_allowed_mention_groups;
+        viewGroups = false;
+        const array = allowed;
         const index = array.indexOf('ATLAS_Customers');
-        if (index > -1) { // only splice array when item is found
-          array.splice(index, 1); // 2nd parameter means remove one item only
+        if (index > -1) {
+          array.splice(index, 1);
         }
-        this.currentUser.c_allowed_mention_groups = array;
+        allowed = array;
       }
 
       const opts = {
