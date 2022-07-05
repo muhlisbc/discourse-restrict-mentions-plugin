@@ -1,5 +1,7 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, {
+  on
+} from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 
 const PLUGIN_ID = "discourse-shared-edits";
@@ -62,22 +64,18 @@ function initWithApi(api) {
 
   api.modifyClass("component:composer-editor", {
     pluginId: PLUGIN_ID,
-    userSearchTerm(term) {
-      if (!this.siteSettings.restrict_mentions_enabled) {
-        return this._super(...arguments);
-      }
+    @on("keyDown")
+    _trackTyping(term) {
+      console.log(this.composer.action)
+      console.log(term)
 
       let viewGroups = true;
 
       const allowed =
-        this.get("topic.c_allowed_mention_groups") ||
-        this.currentUser.get("c_allowed_mention_groups");
+          this.get("topic.c_allowed_mention_groups") ||
+          this.currentUser.get("c_allowed_mention_groups");
 
       console.log([this, allowed]);
-
-      if (Ember.isBlank(allowed)) {
-        return;
-      }
 
       //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY OF STANDARD USERS
       if(!this.currentUser.admin && !this.currentUser.moderator){
@@ -89,18 +87,15 @@ function initWithApi(api) {
         console.log(allowed)
       }
 
-      // const topicId = this.get("topic.id");
-      // const categoryId = this.get("topic.category_id") || this.get("composer.categoryId");
-
       const opts = {
-        term,
-        // topicId,
-        // categoryId,
         includeGroups: viewGroups,
         groupMembersOf: allowed
       };
 
+      console.log(opts)
+
       return userSearch(opts);
+
     }
   });
 }
