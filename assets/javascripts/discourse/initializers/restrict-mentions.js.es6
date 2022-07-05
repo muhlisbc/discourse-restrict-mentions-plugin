@@ -2,12 +2,14 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import discourseComputed from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 
+const PLUGIN_ID = "discourse-shared-edits";
+
 function initWithApi(api) {
   console.log(userSearch)
   if (!Discourse.SiteSettings.restrict_mentions_enabled) return;
 
   api.modifyClass("component:groups-form-interaction-fields", {
-    pluginId: 'groups-form-interaction-fields-plugin',
+    pluginId: PLUGIN_ID,
     @discourseComputed(
       "siteSettings.restrict_mentions_enabled",
       "currentUser.admin",
@@ -37,28 +39,13 @@ function initWithApi(api) {
 
         console.log(newVal)
 
-        if(!this.currentUser.admin && !this.currentUser.moderator){
-          const index = newVal.indexOf('ATLAS_Customers');
-          if (index > -1) {
-            newVal.splice(index, 1);
-          }
-          const TrustlevelZero = allowed.indexOf('Trust_level_0');
-          if (TrustlevelZero > -1) {
-            allowed.splice(TrustlevelZero, 1);
-          }
-          const TrustlevelOne = allowed.indexOf('Trust_level_1');
-          if (TrustlevelOne > -1) {
-            allowed.splice(TrustlevelOne, 1);
-          }
-        }
-
         this.model.set("c_allowed_mention_groups", newVal);
       }
     }
   });
 
   api.modifyClass("model:group", {
-    pluginId: 'group-plugin',
+    pluginId: PLUGIN_ID,
     asJSON() {
       const attrs = this._super(...arguments);
 
@@ -74,7 +61,7 @@ function initWithApi(api) {
   });
 
   api.modifyClass("component:composer-editor", {
-    pluginId: 'composer-editor-plugin',
+    pluginId: PLUGIN_ID,
     userSearchTerm(term) {
       if (!this.siteSettings.restrict_mentions_enabled) {
         return this._super(...arguments);
@@ -99,24 +86,16 @@ function initWithApi(api) {
         if (index > -1) {
           allowed.splice(index, 1);
         }
-        const TrustlevelZero = allowed.indexOf('Trust_level_0');
-        if (TrustlevelZero > -1) {
-          allowed.splice(TrustlevelZero, 1);
-        }
-        const TrustlevelOne = allowed.indexOf('Trust_level_1');
-        if (TrustlevelOne > -1) {
-          allowed.splice(TrustlevelOne, 1);
-        }
         console.log(allowed)
       }
 
-      const topicId = this.get("topic.id");
-      const categoryId = this.get("topic.category_id") || this.get("composer.categoryId");
+      // const topicId = this.get("topic.id");
+      // const categoryId = this.get("topic.category_id") || this.get("composer.categoryId");
 
       const opts = {
         term,
-        topicId,
-        categoryId,
+        // topicId,
+        // categoryId,
         includeGroups: viewGroups,
         groupMembersOf: allowed
       };
