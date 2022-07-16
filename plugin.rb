@@ -1,5 +1,5 @@
 # name: restrict-mentions
-# version: 0.1.2
+# version: 0.2.0
 # authors: Muhlis Budi Cahyono (muhlisbc@gmail.com)
 # url: https://github.com/muhlisbc/discourse-restrict-mentions-plugin
 

@@ -1,52 +1,19 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import discourseComputed, {
-  on
+  bind
 } from "discourse-common/utils/decorators";
 import userSearch from "discourse/lib/user-search";
 
-const PLUGIN_ID = "discourse-shared-edits";
+const PLUGIN_ID = "restrict-mentions";
 
 function initWithApi(api) {
-  if (!Discourse.SiteSettings.restrict_mentions_enabled) return;
+  const siteSettings = api.container.lookup("site-settings:main");
 
-  api.modifyClass("component:groups-form-interaction-fields", {
-    pluginId: PLUGIN_ID,
-    @discourseComputed(
-      "siteSettings.restrict_mentions_enabled",
-      "currentUser.admin",
-      "model.c_all_groups",
-      "model.name"
-    )
-    isShowRestrictMentions(enabled, admin, allGroups, name) {
-      return enabled && admin && allGroups && name && allGroups.includes(name);
-    },
-
-    @discourseComputed("model.c_all_groups", "model.name")
-    cSelectableGroups(allGroups, name) {
-      return (allGroups || []).filter(g => g !== name);
-    },
-
-    actions: {
-      setCAllowedMentionGroups(val) {
-        console.log(val);
-
-        let newVal;
-
-        if (val.includes("any")) {
-          newVal = "any";
-        } else {
-          newVal = val.filter(x => !Ember.isBlank(x)).join("|");
-        }
-
-        console.log(newVal)
-
-        this.model.set("c_allowed_mention_groups", newVal);
-      }
-    }
-  });
+  if (!siteSettings.restrict_mentions_enabled) return;
 
   api.modifyClass("model:group", {
     pluginId: PLUGIN_ID,
+
     asJSON() {
       const attrs = this._super(...arguments);
 
@@ -63,14 +30,24 @@ function initWithApi(api) {
 
   api.modifyClass("component:composer-editor", {
     pluginId: PLUGIN_ID,
-    @on("keyDown")
-    _trackTyping() {
+    @bind
+    _userSearchTerm(term) {
+      if (!this.siteSettings.restrict_mentions_enabled) {
+        return this._super(...arguments);
+      }
+
       let viewGroups = true;
 
-      let allowed = this.currentUser.c_allowed_mention_groups;
+      let allowed =
+        this.get("topic.c_allowed_mention_groups") ||
+        this.currentUser.get("c_allowed_mention_groups");
+
+      if (Ember.isBlank(allowed)) {
+        return;
+      }
 
       //REMOVING CUSTOMER GROUP FROM SEARCHABLE ARRAY OF STANDARD USERS
-      if(!this.currentUser.admin && !this.currentUser.moderator){
+      if(!this.currentUser.staff){
         viewGroups = false;
         const array = allowed;
         const index = array.indexOf('ATLAS_Customers');
@@ -81,14 +58,12 @@ function initWithApi(api) {
       }
 
       const opts = {
+        term,
         includeGroups: viewGroups,
         groupMembersOf: allowed
       };
 
-      console.log(opts)
-
       return userSearch(opts);
-
     }
   });
 }

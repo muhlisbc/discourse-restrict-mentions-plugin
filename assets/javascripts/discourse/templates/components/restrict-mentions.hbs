@@ -1,0 +1,18 @@
+{{#if isShowRestrictMentions}}
+  <label class="control-label">
+    {{i18n "restrict_mentions.main_label"}}
+  </label>
+
+  <div class="control-group">
+    <label>{{i18n "restrict_mentions.label"}}</label>
+
+    {{list-setting
+      value=model.cAllowedMentionGroups
+      choices=cSelectableGroups
+      settingName=null
+      nameProperty=null
+      valueProperty=null
+      onChange=(action "setCAllowedMentionGroups")
+    }}
+  </div>
+{{/if}}

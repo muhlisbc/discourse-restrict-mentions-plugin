@@ -2,3 +2,4 @@ en:
   js:
     restrict_mentions:
       label: "Users in this group can @mention users from these groups..."
+      main_label: "Restrict Mentions"
