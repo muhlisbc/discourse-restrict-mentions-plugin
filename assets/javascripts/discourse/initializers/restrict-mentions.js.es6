@@ -11,6 +11,12 @@ import {
   inCodeBlock,
   // tinyAvatar,
 } from "discourse/lib/utilities";
+import {
+  destroyUserStatuses,
+  initUserStatusHtml,
+  renderUserStatusHtml,
+} from "discourse/lib/user-status-on-autocomplete";
+import { getOwner } from "@ember/owner";
 
 const PLUGIN_ID = "restrict-mentions";
 
@@ -62,32 +68,46 @@ function initWithApi(api) {
         allowed = array;
       }
 
-      const $input = $(this.element.querySelector(".d-editor-input"));
+      const input = this.element.querySelector(".d-editor-input");
+      const preview = this.element.querySelector(".d-editor-preview-wrapper");
 
       if (this.siteSettings.enable_mentions) {
-        $input.autocomplete({
+        $(input).autocomplete({
           template: findRawTemplate("user-selector-autocomplete"),
-          dataSource: (term) =>
-            userSearch({
+          dataSource: (term) => {
+            destroyUserStatuses();
+
+            console.log("hiha");
+
+            return userSearch({
               term,
+              groupMembersOf: allowed,
               includeGroups: viewGroups,
-              groupMembersOf: allowed
-            }),
+            }).then((result) => {
+              initUserStatusHtml(getOwner(this), result.users);
+              return result;
+            });
+          },
+          onRender: (options) => renderUserStatusHtml(options),
           key: "@",
           transformComplete: (v) => v.username || v.name,
           afterComplete: this._afterMentionComplete,
-          triggerRule: (textarea) =>
-            !inCodeBlock(textarea.value, caretPosition(textarea)),
+          triggerRule: async (textarea) =>
+            !(await inCodeBlock(textarea.value, caretPosition(textarea))),
+          onClose: destroyUserStatuses,
         });
       }
-
-      this.element
-        .querySelector(".d-editor-input")
-        ?.addEventListener("scroll", this._throttledSyncEditorAndPreviewScroll);
+  
+      input?.addEventListener(
+        "scroll",
+        this._throttledSyncEditorAndPreviewScroll
+      );
+  
+      this._registerImageAltTextButtonClick(preview);
 
       // Focus on the body unless we have a title
       if (!this.get("composer.canEditTitle")) {
-        putCursorAtEnd(this.element.querySelector(".d-editor-input"));
+        putCursorAtEnd(input);
       }
 
       if (this.allowUpload) {

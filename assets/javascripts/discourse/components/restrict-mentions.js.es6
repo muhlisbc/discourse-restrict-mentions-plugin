@@ -1,6 +1,8 @@
+import Component from "@ember/component";
+import { isBlank } from "@ember/utils";
 import discourseComputed from "discourse-common/utils/decorators";
 
-export default Ember.Component.extend({
+export default Component.extend({
   @discourseComputed(
     "siteSettings.restrict_mentions_enabled",
     "currentUser.admin",
@@ -23,7 +25,7 @@ export default Ember.Component.extend({
       if (val.includes("any")) {
         newVal = "any";
       } else {
-        newVal = val.filter(x => !Ember.isBlank(x)).join("|");
+        newVal = val.filter(x => !isBlank(x)).join("|");
       }
 
       this.model.set("c_allowed_mention_groups", newVal);
